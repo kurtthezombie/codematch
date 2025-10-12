@@ -13,3 +13,32 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                String       @id @default(uuid())
+  username          String    @unique
+  email             String    @unique
+  passwordHash      String
+  bio               String?
+  location          String?
+  skills            String[]
+  experienceLevel   ExperienceLevel?
+  coderStatus       CoderStatus? 
+  projectInterests  String[]
+  avatarUrl         String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum ExperienceLevel {
+  Beginner
+  Intermediate
+  Advanced
+  Expert
+}
+
+enum CoderStatus {
+  Student
+  Enthusiast
+  Professional
+}
