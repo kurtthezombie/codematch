@@ -58,4 +58,10 @@ export class AuthService extends BaseService {
             }
         }
     }
+
+    async logout() {
+        return {
+            message: 'Logout successful',
+        }
+    }
 }
