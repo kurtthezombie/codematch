@@ -26,3 +26,6 @@ dist/
 build/
 out/
 coverage/
+
+# Claude Code instructions
+CLAUDE.md
