@@ -24,29 +24,23 @@ export class UserService extends BaseService {
       message: 'User retrieved successfully',
       safeUser,
     };
-  }   
+  }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    let safeUser;
     try {
       const updatedUser = await this.user.update({
         where: { id },
         data: updateUserDto,
       });
 
-      const { passwordHash, ...rest } = updatedUser;
-      safeUser = rest;
+      const { passwordHash, ...data } = updatedUser;
+      
+      return {
+        message: 'User updated successfully',
+        data,
+      };
     } catch (error) {  
       throw new NotFoundException('User not found');
     }
-
-    return {
-      message: 'User updated successfully',
-      safeUser,
-    };
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
