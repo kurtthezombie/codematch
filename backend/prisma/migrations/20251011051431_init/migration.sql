@@ -6,7 +6,7 @@ CREATE TYPE "CoderStatus" AS ENUM ('Student', 'Enthusiast', 'Professional');
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL,
+    "id" BIGINT NOT NULL,
     "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,

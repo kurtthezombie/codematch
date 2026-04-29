@@ -14,11 +14,13 @@ import { JwtModule } from '@nestjs/jwt';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .exclude('auth/login', 'auth/signup')
-      .forRoutes('*');
-  }
-}
+export class AppModule {}
+// disable middleware for now
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(AuthMiddleware)
+//       .exclude('auth/login', 'auth/signup')
+//       .forRoutes('*');
+//   }
+// }
