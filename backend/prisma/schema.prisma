@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -15,30 +9,274 @@ datasource db {
 }
 
 model User {
-  id                Int          @id @default(autoincrement())
-  username          String    @unique
-  email             String    @unique
-  passwordHash      String
-  bio               String?
-  location          String?
-  skills            String[]
-  experienceLevel   ExperienceLevel?
-  coderStatus       CoderStatus? 
-  projectInterests  String[]
-  avatarUrl         String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  username     String   @unique
+  role         String   @default("user")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  profile             UserProfile?
+  skills              UserSkill[]
+  interests           UserInterest[]
+  portfolioProjects   PortfolioProject[]
+  projectPosts        ProjectPost[]        @relation("ProjectOwner")
+  projectApplications ProjectApplication[] @relation("ProjectApplicant")
+  projectMemberships  ProjectMember[]
+  sentMatchRequests   MatchRequest[]       @relation("SentMatchRequests")
+  receivedRequests    MatchRequest[]       @relation("ReceivedMatchRequests")
+  sentMessages        Message[]            @relation("SentMessages")
+  receivedMessages    Message[]            @relation("ReceivedMessages")
+
+  @@map("USERS")
 }
 
-enum ExperienceLevel {
-  Beginner
-  Intermediate
-  Advanced
-  Expert
+model UserProfile {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @unique @map("user_id")
+  fullName           String?  @map("full_name")
+  bio                String?
+  location           String?
+  avatarUrl          String?  @map("avatar_url")
+  githubUrl          String?  @map("github_url")
+  linkedinUrl        String?  @map("linkedin_url")
+  portfolioUrl       String?  @map("portfolio_url")
+  experienceLevel    String?  @map("experience_level")
+  availabilityStatus String?  @map("availability_status")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("USER_PROFILES")
 }
 
-enum CoderStatus {
-  Student
-  Enthusiast
-  Professional
+model Skill {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  category  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userSkills             UserSkill[]
+  portfolioProjectSkills PortfolioProjectSkill[]
+  projectRoleSkills      ProjectRoleSkill[]
+
+  @@map("SKILLS")
+}
+
+model UserSkill {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  skillId          Int      @map("skill_id")
+  proficiencyLevel String?  @map("proficiency_level")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillId])
+  @@index([skillId])
+  @@map("USER_SKILLS")
+}
+
+model Interest {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  userInterests UserInterest[]
+
+  @@map("INTERESTS")
+}
+
+model UserInterest {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  interestId Int      @map("interest_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interest Interest @relation(fields: [interestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, interestId])
+  @@index([interestId])
+  @@map("USER_INTERESTS")
+}
+
+model PortfolioProject {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  title       String
+  description String?
+  projectUrl  String?   @map("project_url")
+  githubUrl   String?   @map("github_url")
+  imageUrl    String?   @map("image_url")
+  isFeatured  Boolean   @default(false) @map("is_featured")
+  startDate   DateTime? @map("start_date") @db.Date
+  endDate     DateTime? @map("end_date") @db.Date
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user   User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills PortfolioProjectSkill[]
+
+  @@index([userId])
+  @@map("PORTFOLIO_PROJECTS")
+}
+
+model PortfolioProjectSkill {
+  id                 Int @id @default(autoincrement())
+  portfolioProjectId Int @map("portfolio_project_id")
+  skillId            Int @map("skill_id")
+
+  portfolioProject PortfolioProject @relation(fields: [portfolioProjectId], references: [id], onDelete: Cascade)
+  skill            Skill            @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([portfolioProjectId, skillId])
+  @@index([skillId])
+  @@map("PORTFOLIO_PROJECT_SKILLS")
+}
+
+model ProjectPost {
+  id           Int      @id @default(autoincrement())
+  ownerId      Int      @map("owner_id")
+  title        String
+  description  String?
+  projectType  String?  @map("project_type")
+  teamSizeType String?  @map("team_size_type")
+  minMembers   Int?     @map("min_members")
+  maxMembers   Int?     @map("max_members")
+  status       String   @default("open")
+  visibility   String   @default("public")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  owner         User                 @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  roles         ProjectRole[]
+  applications  ProjectApplication[]
+  members       ProjectMember[]
+  matchRequests MatchRequest[]
+  messages      Message[]
+
+  @@index([ownerId])
+  @@map("PROJECT_POSTS")
+}
+
+model ProjectRole {
+  id            Int      @id @default(autoincrement())
+  projectPostId Int      @map("project_post_id")
+  roleName      String   @map("role_name")
+  description   String?
+  slotsNeeded   Int      @default(1) @map("slots_needed")
+  slotsFilled   Int      @default(0) @map("slots_filled")
+  status        String   @default("open")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  projectPost  ProjectPost          @relation(fields: [projectPostId], references: [id], onDelete: Cascade)
+  skills       ProjectRoleSkill[]
+  applications ProjectApplication[]
+  members      ProjectMember[]
+
+  @@index([projectPostId])
+  @@map("PROJECT_ROLES")
+}
+
+model ProjectRoleSkill {
+  id            Int     @id @default(autoincrement())
+  projectRoleId Int     @map("project_role_id")
+  skillId       Int     @map("skill_id")
+  priority      String?
+
+  projectRole ProjectRole @relation(fields: [projectRoleId], references: [id], onDelete: Cascade)
+  skill       Skill       @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([projectRoleId, skillId])
+  @@index([skillId])
+  @@map("PROJECT_ROLE_SKILLS")
+}
+
+model ProjectApplication {
+  id            Int      @id @default(autoincrement())
+  projectPostId Int      @map("project_post_id")
+  projectRoleId Int      @map("project_role_id")
+  applicantId   Int      @map("applicant_id")
+  message       String?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  projectPost ProjectPost @relation(fields: [projectPostId], references: [id], onDelete: Cascade)
+  projectRole ProjectRole @relation(fields: [projectRoleId], references: [id], onDelete: Cascade)
+  applicant   User        @relation("ProjectApplicant", fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@unique([projectRoleId, applicantId])
+  @@index([projectPostId])
+  @@index([applicantId])
+  @@map("PROJECT_APPLICATIONS")
+}
+
+model ProjectMember {
+  id            Int      @id @default(autoincrement())
+  projectPostId Int      @map("project_post_id")
+  userId        Int      @map("user_id")
+  projectRoleId Int      @map("project_role_id")
+  status        String   @default("active")
+  joinedAt      DateTime @default(now()) @map("joined_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  projectPost ProjectPost @relation(fields: [projectPostId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectRole ProjectRole @relation(fields: [projectRoleId], references: [id], onDelete: Cascade)
+
+  @@unique([projectPostId, userId])
+  @@index([userId])
+  @@index([projectRoleId])
+  @@map("PROJECT_MEMBERS")
+}
+
+model MatchRequest {
+  id            Int      @id @default(autoincrement())
+  senderId      Int      @map("sender_id")
+  receiverId    Int      @map("receiver_id")
+  projectPostId Int?     @map("project_post_id")
+  message       String?
+  status        String   @default("pending")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  sender      User         @relation("SentMatchRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User         @relation("ReceivedMatchRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  projectPost ProjectPost? @relation(fields: [projectPostId], references: [id], onDelete: SetNull)
+
+  @@unique([senderId, receiverId, projectPostId])
+  @@index([receiverId])
+  @@index([projectPostId])
+  @@map("MATCH_REQUESTS")
+}
+
+model Message {
+  id            Int      @id @default(autoincrement())
+  senderId      Int      @map("sender_id")
+  receiverId    Int      @map("receiver_id")
+  projectPostId Int?     @map("project_post_id")
+  content       String
+  isRead        Boolean  @default(false) @map("is_read")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  sender      User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver    User         @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+  projectPost ProjectPost? @relation(fields: [projectPostId], references: [id], onDelete: SetNull)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([projectPostId])
+  @@map("MESSAGES")
 }

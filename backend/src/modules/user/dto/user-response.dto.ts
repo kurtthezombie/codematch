@@ -1,5 +1,5 @@
 // src/modules/user/dto/user-response.dto.ts
-import { CoderStatus, ExperienceLevel } from 'generated/prisma';
+import { CoderStatus, ExperienceLevel } from 'src/constants/enums';
 import { IsArray, IsEnum, IsOptional, IsString, IsDate, IsInt } from 'class-validator';
 
 export class UserResponseDto {

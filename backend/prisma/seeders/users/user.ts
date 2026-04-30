@@ -1,31 +1,53 @@
 import "dotenv/config";
-import { PrismaClient } from "@prisma/client";
-import { Prisma, ExperienceLevel, CoderStatus } from "generated/prisma";
-import { faker } from "@faker-js/faker";
+import { Prisma, PrismaClient } from "generated/prisma";
 import bycrypt from "bcrypt";
-import { randomizeFetchEnumValue } from "src/helpers/db-function";
+
+const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
+const availabilityStatuses = ["Student", "Enthusiast", "Professional"];
+const skillNames = ["JavaScript", "TypeScript", "Node.js", "React", "PostgreSQL"];
+const interestNames = ["Web Apps", "Open Source", "SaaS", "Developer Tools"];
 
 export const UserSeeder = async (prisma: PrismaClient) => {
-  const person = faker.person;
-  const internet = faker.internet;
-  const location = faker.location;
-
   const hashedPassword = await bycrypt.hash("Password2026!", 10);
 
-  for(let x = 0; x < 10; x++) {
-    const email = internet.email();
+  for (let x = 0; x < 10; x++) {
+    const email = `user${x + 1}@example.com`;
+    const userSkills = [skillNames[x % skillNames.length], skillNames[(x + 1) % skillNames.length]];
+    const userInterests = [interestNames[x % interestNames.length], interestNames[(x + 1) % interestNames.length]];
 
     const user: Prisma.UserCreateInput = {
-      username: internet.username(),
-      email: email,
+      username: `user${x + 1}`,
+      email,
       passwordHash: hashedPassword,
-      bio: person.bio(),
-      location: location.streetAddress(),
-      skills: ["Skill 1", "Skill 2"],
-      experienceLevel: randomizeFetchEnumValue(ExperienceLevel), // enum
-      coderStatus: randomizeFetchEnumValue(CoderStatus), // enum
-      projectInterests: ["Interest 1", "Interest 2"],
-      avatarUrl: internet.url(),
+      profile: {
+        create: {
+          bio: `Seed profile for user ${x + 1}`,
+          location: `Location ${x + 1}`,
+          experienceLevel: experienceLevels[x % experienceLevels.length],
+          availabilityStatus: availabilityStatuses[x % availabilityStatuses.length],
+          avatarUrl: `https://example.com/avatar-${x + 1}.png`,
+        },
+      },
+      skills: {
+        create: userSkills.map((name) => ({
+          skill: {
+            connectOrCreate: {
+              where: { name },
+              create: { name },
+            },
+          },
+        })),
+      },
+      interests: {
+        create: userInterests.map((name) => ({
+          interest: {
+            connectOrCreate: {
+              where: { name },
+              create: { name },
+            },
+          },
+        })),
+      },
     };
 
     await prisma.user.upsert({
@@ -33,5 +55,5 @@ export const UserSeeder = async (prisma: PrismaClient) => {
       update: {},
       create: user,
     });
-  };
+  }
 };

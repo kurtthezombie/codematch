@@ -1,5 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { IsAlphanumeric, IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ExperienceLevel, CoderStatus } from 'src/constants/enums'; 
 
 export class UpdateUserDto {
