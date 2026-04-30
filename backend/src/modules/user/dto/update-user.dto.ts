@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsAlphanumeric, IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
-import { CoderStatus, ExperienceLevel } from 'generated/prisma';
+import { ExperienceLevel, CoderStatus } from 'src/constants/enums'; 
 
 export class UpdateUserDto {
   @IsString()
