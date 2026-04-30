@@ -46,11 +46,11 @@ export class AuthService extends BaseService {
         if (!isValid) throw new UnauthorizedException('Invalid credentials');
 
         const payload = { sub: user.id, username: user.username };
-        const token = await this.jwtService.signAsync(payload);
+        const access_token = await this.jwtService.signAsync(payload);
 
         return {
             message: 'Login successful',
-            token,
+            access_token,
             user: {
                 id: user.id,
                 email: user.email,
