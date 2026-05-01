@@ -1,12 +1,7 @@
-function App() {
-  // npx shadcn@latest init
+import LandingPage from './pages/LandingPage';
 
-  return (
-    <div>
-      <h1>hello world</h1>
-      <h1>testing</h1>
-    </div>
-  );
-}
+function App() {
+  return <LandingPage />;
+};
 
 export default App;
