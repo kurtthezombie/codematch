@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     environment:
       PORT: 3000
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@db:5432/${DATABASE_NAME}?schema=public
       AUTH_JWT_SECRET: ${AUTH_JWT_SECRET}
     ports:
       - "3000:3000"
