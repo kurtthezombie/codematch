@@ -29,3 +29,6 @@ coverage/
 
 # Claude Code instructions
 CLAUDE.md
+
+# Codex local artifact
+.codex
