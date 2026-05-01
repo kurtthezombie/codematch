@@ -7,13 +7,19 @@ import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 
+const jwtSecret = process.env.AUTH_JWT_SECRET;
+
+if (!jwtSecret) {
+  throw new Error('AUTH_JWT_SECRET environment variable is required');
+}
+
 @Module({
   imports: [
     PrismaModule,
     UserModule,
     JwtModule.register({
       global: true,
-      secret: process.env.AUTH_JWT_SECRET,
+      secret: jwtSecret,
       signOptions: { expiresIn: '1d' },
     }),
   ],
