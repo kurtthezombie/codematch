@@ -1,32 +1,32 @@
 services:
   db:
-    container_name: codematch-db
+    container_name: ${PROJECT_NAME}-db
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_DB: codematch
-      POSTGRES_USER: codematch
-      POSTGRES_PASSWORD: codematch
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U codematch -d codematch"]
+      test: ["CMD-SHELL", "pg_isready -U ${PROJECT_NAME} -d ${PROJECT_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   backend:
-    container_name: codematch-backend
+    container_name: ${PROJECT_NAME}-backend
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
     restart: unless-stopped
     environment:
       PORT: 3000
-      DATABASE_URL: postgresql://codematch:codematch@db:5432/codematch?schema=public
-      AUTH_JWT_SECRET: dev-secret
+      DATABASE_URL: ${DATABASE_URL}
+      AUTH_JWT_SECRET: ${AUTH_JWT_SECRET}
     ports:
       - "3000:3000"
     volumes:
@@ -35,10 +35,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:dev"
+    command: sh -c "npx prisma generate && npx prisma migrate dev && npm run start:dev"
 
   frontend:
-    container_name: codematch-frontend
+    container_name: ${PROJECT_NAME}-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev

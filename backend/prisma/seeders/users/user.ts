@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Prisma, PrismaClient } from "generated/prisma";
 import bycrypt from "bcrypt";
+import { faker } from '@faker-js/faker'
 
 const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 const availabilityStatuses = ["Student", "Enthusiast", "Professional"];
@@ -21,6 +22,7 @@ export const UserSeeder = async (prisma: PrismaClient) => {
       passwordHash: hashedPassword,
       profile: {
         create: {
+          fullName: faker.person.fullName(),
           bio: `Seed profile for user ${x + 1}`,
           location: `Location ${x + 1}`,
           experienceLevel: experienceLevels[x % experienceLevels.length],
