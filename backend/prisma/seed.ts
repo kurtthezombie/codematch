@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { PrismaClient } from "generated/prisma";
+import { PrismaClient } from "@prisma/client";
 import { UserSeeder } from './seeders/users/user';
 
 const prisma = new PrismaClient();
