@@ -3,16 +3,19 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from './auth.guard';
+import { Public } from 'src/decorator/isPublic';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
+    @Public()
     @Post('signup')
     async signup(@Body() dto: CreateUserDto) {
         return this.authService.signup(dto);
     }
 
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() dto: LoginDto) {

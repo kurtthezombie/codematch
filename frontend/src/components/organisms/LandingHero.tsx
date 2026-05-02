@@ -30,8 +30,8 @@ export function LandingHero() {
             Start matching
             <ArrowRight className="size-4" aria-hidden="true" />
           </Button>
-          <Button href="/demo" variant="secondary">
-            View demo
+          <Button href="/login" variant="secondary">
+            Log in
           </Button>
         </div>
       </div>
