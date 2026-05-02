@@ -10,23 +10,51 @@ export class AuthController {
 
     @Post('signup')
     async signup(@Body() dto: CreateUserDto) {
-        return this.authService.signup(dto);
+        try {
+            return this.authService.signup(dto);
+        } catch(err) {
+            return {
+                status: HttpStatus.BAD_REQUEST,
+                message: err.message
+            }
+        }
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() dto: LoginDto) {
-        return this.authService.login(dto);
+        try {
+            return this.authService.login(dto);
+        } catch(err) {
+            return {
+                status: HttpStatus.UNAUTHORIZED,
+                message: err.message
+            }
+        }
     }
 
     @UseGuards(AuthGuard)
     @Get('profile')
     getProfile(@Request() req: any) { // any type for now, will change in the future
-        return req.user;
+        try {
+            return req.user;
+        } catch(err) {
+            return {
+                status: HttpStatus.BAD_REQUEST,
+                message: err.message
+            }
+        }
     }
 
     @Post('logout')
     async logout() {
-        return this.authService.logout();
+        try {
+            return this.authService.logout();
+        } catch(err) {
+            return {
+                status: HttpStatus.BAD_REQUEST,
+                message: err.message
+            }
+        }
     } 
 }

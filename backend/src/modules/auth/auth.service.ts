@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { BaseService } from 'src/common/base.service';
@@ -31,6 +31,7 @@ export class AuthService extends BaseService {
         });
 
         return {
+            status: HttpStatus.OK,
             message: 'User created successfully',
             user,
         };
@@ -49,6 +50,7 @@ export class AuthService extends BaseService {
         const access_token = await this.jwtService.signAsync(payload);
 
         return {
+            status: HttpStatus.OK,
             message: 'Login successful',
             access_token,
             user: {
@@ -61,6 +63,7 @@ export class AuthService extends BaseService {
 
     async logout() {
         return {
+            status: HttpStatus.OK,
             message: 'Logout successful',
         }
     }
