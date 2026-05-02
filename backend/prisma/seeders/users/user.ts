@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Prisma, PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
 import { faker } from '@faker-js/faker'

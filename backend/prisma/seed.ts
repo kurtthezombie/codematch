@@ -1,6 +1,8 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { UserSeeder } from './seeders/users/user';
+import { SkillSeeder } from "./seeders/skills/skill";
+import { InterestSeeder } from "./seeders/interests/interest";
 
 const prisma = new PrismaClient();
 
@@ -10,11 +12,18 @@ const prisma = new PrismaClient();
  * 
  * npm run db:seed
  * 
+ * 
+ * to reset database do command:
+ * 
+ * npm run migrate:reset
+ * 
  */
 
 async function main() {
     // call seeders here
     await UserSeeder(prisma);
+    await SkillSeeder(prisma);
+    await InterestSeeder(prisma);
 }
 main()
   .then(async () => {
