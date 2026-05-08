@@ -36,7 +36,7 @@ export function LoginForm() {
       });
 
       login(response.access_token, response.user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Could not log in.');
     } finally {
@@ -98,14 +98,6 @@ export function LoginForm() {
           autoComplete="current-password"
           placeholder="Enter your password"
           required
-          helper={
-            <a
-              href="/forgot-password"
-              className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-            >
-              Forgot password?
-            </a>
-          }
         />
   
         {error && (
@@ -113,6 +105,15 @@ export function LoginForm() {
             {error}
           </p>
         )}  
+        <div className="flex justify-end">
+          <a
+            href="/forgot-password"
+            className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            Forgot password?
+          </a>
+        </div>
+        
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? 'Logging in...' : 'Log in'}
