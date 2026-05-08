@@ -1,7 +1,10 @@
 import { ArrowRight } from 'lucide-react';
 import { X } from 'lucide-react';
 import { useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
+import { api } from '../../utils/api';
+import { useAuth } from '../../context/AuthContext';
+import type { LoginResponse } from '../../types/auth';
 
 import { Button } from '../atoms/Button';
 import { FormField } from '../molecules/FormField';
@@ -11,6 +14,35 @@ export function LoginForm() {
   const [showAccountCreated, setShowAccountCreated] = useState(
     searchParams.get('created') === '1'
   );
+  const navigate = useNavigate();
+  const { login } = useAuth(); 
+  const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setError(null);
+    setIsSubmitting(true);
+
+    const formData = new FormData(event.currentTarget);
+    const identifier = String(formData.get('identifier'));
+    const password = String(formData.get('password'));
+    
+    try {
+      const response = await api.post<LoginResponse>('/auth/login', {
+        identifier,
+        password,
+      });
+
+      login(response.access_token, response.user);
+      navigate('/');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Could not log in.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   function dismissAccountCreated() {
     setShowAccountCreated(false);
@@ -47,14 +79,14 @@ export function LoginForm() {
         </div>
       )}
 
-      <form className="space-y-5">
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <FormField
-          id="email"
-          label="Email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@example.com"
+          id="identifier"
+          label="Email or username"
+          name="identifier"
+          type="text"
+          autoComplete="username"
+          placeholder="you@example.com or janedoe"
           required
         />
 
@@ -75,9 +107,15 @@ export function LoginForm() {
             </a>
           }
         />
+  
+        {error && (
+          <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        )}  
 
-        <Button type="submit" className="w-full">
-          Log in
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? 'Logging in...' : 'Log in'}
         </Button>
       </form>
 
