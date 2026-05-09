@@ -1,18 +1,25 @@
 import { BrowserRouter, Route, Routes } from 'react-router';
 
-import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import LandingPage from './pages/LandingPage';
+import NotFoundPage from './pages/NotFoundPage';
 import DashboardPage from './pages/DashboardPage.tsx';
+
 import RequireAuth from './routes/RequireAuth';
+import RedirectIfAuth from './routes/RedirectIfAuth';
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+        <Route element={<RedirectIfAuth />}>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+        </Route>
 
         <Route element={<RequireAuth/ >}>
           <Route path="/dashboard" element={<DashboardPage />} />

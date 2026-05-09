@@ -50,6 +50,10 @@ export function SiteHeader({ variant = 'landing' }: SiteHeaderProps) {
               </Button>
             </>
           )}
+
+          {variant === 'notfound' && (
+          <></>
+          )}
         </nav>
       </div>
     </header>
