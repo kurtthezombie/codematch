@@ -1,6 +1,6 @@
 import { Button } from '../atoms/Button';
 
-type SiteHeaderVariant = 'landing' | 'login' | 'signup';
+type SiteHeaderVariant = 'landing' | 'login' | 'signup' | 'notfound';
 
 type SiteHeaderProps = {
   variant?: SiteHeaderVariant;
@@ -49,10 +49,6 @@ export function SiteHeader({ variant = 'landing' }: SiteHeaderProps) {
                 Log in
               </Button>
             </>
-          )}
-
-          {variant === 'notfound' && (
-          <></>
           )}
         </nav>
       </div>

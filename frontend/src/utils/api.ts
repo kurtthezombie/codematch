@@ -1,5 +1,7 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+export const AUTH_UNAUTHORIZED_EVENT = 'codematch:auth-unauthorized';
+
 type RequestData = Record<string, unknown>;
 
 type RequestOptions = {
@@ -36,6 +38,10 @@ async function request<TResponse>(
   const data = await parseResponse(response);
 
   if (!response.ok) {
+    if (response.status === 401) {
+      window.dispatchEvent(new Event(AUTH_UNAUTHORIZED_EVENT));
+    }
+
     throw new ApiError(getErrorMessage(data), response.status, data);
   }
 
