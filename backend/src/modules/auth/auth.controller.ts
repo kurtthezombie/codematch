@@ -1,13 +1,24 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from './auth.guard';
+import { Public } from 'src/decorator/isPublic';
+
+type AuthenticatedRequest = ExpressRequest & {
+  user: {
+    sub: number;
+    username: string;
+    iat?: number;
+    exp?: number;
+  };
+};
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
+    @Public()
     @Post('signup')
     async signup(@Body() dto: CreateUserDto) {
         try {
@@ -20,6 +31,7 @@ export class AuthController {
         }
     }
 
+    @Public()
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() dto: LoginDto) {
@@ -33,17 +45,9 @@ export class AuthController {
         }
     }
 
-    @UseGuards(AuthGuard)
     @Get('profile')
-    getProfile(@Request() req: any) { // any type for now, will change in the future
-        try {
-            return req.user;
-        } catch(err) {
-            return {
-                status: HttpStatus.BAD_REQUEST,
-                message: err.message
-            }
-        }
+    getProfile(@Request() req: AuthenticatedRequest) { // any type for now, will change in the future
+        return this.authService.getProfile(req.user.sub);
     }
 
     @Post('logout')

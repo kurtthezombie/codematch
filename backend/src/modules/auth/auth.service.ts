@@ -12,6 +12,26 @@ export class AuthService extends BaseService {
         super(prisma);
     }
 
+    async getProfile(userId: number) {
+      const user = await this.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          email: true,
+          username: true,
+          role: true,
+          isActive: true,
+          createdAt: true
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return user;
+  }
+
     async signup(dto: CreateUserDto) {
         const { email, username, password } = dto;
 
@@ -38,9 +58,17 @@ export class AuthService extends BaseService {
     }
 
     async login(dto: LoginDto) {
-        const { username, password } = dto;
+        const { identifier, password } = dto;
 
-        const user = await this.user.findUnique({ where: { username } });
+        const user = await this.user.findFirst({
+          where: {
+            OR: [
+              { email: identifier},
+              { username: identifier},
+            ],
+          },
+        });
+        
         if (!user) throw new UnauthorizedException('Invalid credentials');
 
         const isValid = await bcrypt.compare(password, user.passwordHash);
