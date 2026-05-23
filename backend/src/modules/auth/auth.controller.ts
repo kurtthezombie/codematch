@@ -46,8 +46,15 @@ export class AuthController {
     }
 
     @Get('profile')
-    getProfile(@Request() req: AuthenticatedRequest) { // any type for now, will change in the future
-        return this.authService.getProfile(req.user.sub);
+    getProfile(@Request() req: AuthenticatedRequest) {
+        try {
+            return this.authService.getProfile(req.user.sub);
+        } catch(err) {
+            return {
+                status: HttpStatus.NOT_FOUND,
+                message: err.message
+            }
+        }
     }
 
     @Post('logout')

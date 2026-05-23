@@ -29,7 +29,10 @@ export class AuthService extends BaseService {
       throw new UnauthorizedException();
     }
 
-    return user;
+    return {
+        status: HttpStatus.OK,
+        data: user
+    };
   }
 
     async signup(dto: CreateUserDto) {
