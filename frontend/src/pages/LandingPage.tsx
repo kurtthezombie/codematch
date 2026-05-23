@@ -1,5 +1,5 @@
-import { SiteHeader } from '../components/molecules/SiteHeader';
-import { LandingHero } from '../components/organisms/LandingHero';
+import { SiteHeader } from '@/components/molecules/SiteHeader';
+import { LandingHero } from '@/components/organisms/LandingHero';
 
 export default function LandingPage() {
   return (

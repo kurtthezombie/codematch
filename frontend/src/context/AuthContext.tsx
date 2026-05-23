@@ -7,8 +7,8 @@ import {
   type ReactNode,
 } from 'react';
 
-import { AUTH_UNAUTHORIZED_EVENT, api } from '../utils/api';
-import type { AuthUser } from '../types/auth';
+import { AUTH_UNAUTHORIZED_EVENT, api } from '@/utils/api';
+import type { AuthUser } from '@/types/auth';
 
 type AuthContextValue = {
   token: string | null;

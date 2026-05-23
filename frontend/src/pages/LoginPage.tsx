@@ -1,5 +1,5 @@
-import { SiteHeader } from '../components/molecules/SiteHeader';
-import { LoginForm } from '../components/organisms/LoginForm';
+import { SiteHeader } from '@/components/molecules/SiteHeader';
+import { LoginForm } from '@/components/organisms/LoginForm';
 
 export default function LoginPage() {
   return (
