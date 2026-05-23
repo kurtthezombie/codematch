@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react';
 
-import { Button } from '../components/atoms/Button';
-import { SiteHeader } from '../components/molecules/SiteHeader';
-import { useAuth } from '../context/AuthContext';
+import { Button } from '@/components/atoms/Button';
+import { SiteHeader } from '@/components/molecules/SiteHeader';
+import { useAuth } from '@/context/AuthContext';
 
 export default function NotFoundPage() {
   const { isAuthenticated } = useAuth();
