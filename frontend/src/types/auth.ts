@@ -10,3 +10,9 @@ export type LoginResponse = {
   user: AuthUser;
 };
 
+export type SignupResponse = {
+  message: string;
+  user: AuthUser & {
+    createdAt: string;
+  };
+};

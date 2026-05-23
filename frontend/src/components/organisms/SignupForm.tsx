@@ -5,16 +5,7 @@ import { useNavigate } from 'react-router';
 import { Button } from '../atoms/Button';
 import { FormField } from '../molecules/FormField';
 import { api } from '../../utils/api';
-
-type SignupResponse = {
-  message: string;
-  user: {
-    id: number;
-    email: string;
-    username: string;
-    createdAt: string;
-  };
-};
+import type { SignupResponse } from '../../types/auth';
 
 export function SignupForm() {
   const navigate = useNavigate();
