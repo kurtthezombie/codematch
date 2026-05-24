@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,23 +21,39 @@ export class AuthController {
     @Public()
     @Post('signup')
     async signup(@Body() dto: CreateUserDto) {
-        return this.authService.signup(dto);
+        try {
+            return await this.authService.signup(dto);
+        } catch(err) {
+            throw new BadRequestException(err.message);
+        }
     }
 
     @Public()
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() dto: LoginDto) {
-        return this.authService.login(dto);
+        try {
+            return await this.authService.login(dto);
+        } catch(err) {
+            throw new UnauthorizedException(err.message);
+        }
     }
 
     @Get('profile')
-    getProfile(@Request() req: AuthenticatedRequest) { // any type for now, will change in the future
-        return this.authService.getProfile(req.user.sub);
+    async getProfile(@Request() req: AuthenticatedRequest) {
+        try {
+            return await this.authService.getProfile(req.user.sub);
+        } catch(err) {
+            throw new NotFoundException(err.message);
+        }
     }
 
     @Post('logout')
     async logout() {
-        return this.authService.logout();
+        try {
+            return await this.authService.logout();
+        } catch(err) {
+            throw new BadRequestException(err.message);
+        }
     } 
 }
