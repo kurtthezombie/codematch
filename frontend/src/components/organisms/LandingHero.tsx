@@ -1,6 +1,6 @@
 import { ArrowRight } from 'lucide-react';
 
-import { Button } from '../atoms/Button';
+import { Button } from '@/components/atoms/Button';
 
 const stats = [
   { label: 'Challenge reviews', value: '12k+' },
