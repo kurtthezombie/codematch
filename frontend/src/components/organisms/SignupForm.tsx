@@ -2,10 +2,10 @@ import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
-import { Button } from '../atoms/Button';
-import { FormField } from '../molecules/FormField';
-import { api } from '../../utils/api';
-import type { SignupResponse } from '../../types/auth';
+import { Button } from '@/components/atoms/Button';
+import { FormField } from '@/components/molecules/FormField';
+import { api } from '@/utils/api';
+import type { SignupResponse } from '@/types/auth';
 
 export function SignupForm() {
   const navigate = useNavigate();

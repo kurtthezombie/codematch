@@ -1,6 +1,6 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-import { Input } from '../atoms/Input';
+import { Input } from '@/components/atoms/Input';
 
 type FormFieldProps = ComponentPropsWithoutRef<'input'> & {
   label: string;

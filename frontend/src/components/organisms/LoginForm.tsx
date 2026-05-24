@@ -2,12 +2,12 @@ import { ArrowRight } from 'lucide-react';
 import { X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { api } from '../../utils/api';
-import { useAuth } from '../../context/AuthContext';
-import type { LoginResponse } from '../../types/auth';
+import { api } from '@/utils/api';
+import { useAuth } from '@/context/AuthContext';
+import type { LoginResponse } from '@/types/auth';
 
-import { Button } from '../atoms/Button';
-import { FormField } from '../molecules/FormField';
+import { Button } from '@/components/atoms/Button';
+import { FormField } from '@/components/molecules/FormField';
 
 export function LoginForm() {
   const [searchParams] = useSearchParams();
