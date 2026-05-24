@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Get, Request, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -22,12 +22,9 @@ export class AuthController {
     @Post('signup')
     async signup(@Body() dto: CreateUserDto) {
         try {
-            return this.authService.signup(dto);
+            return await this.authService.signup(dto);
         } catch(err) {
-            return {
-                status: HttpStatus.BAD_REQUEST,
-                message: err.message
-            }
+            throw new BadRequestException(err.message);
         }
     }
 
@@ -36,36 +33,27 @@ export class AuthController {
     @Post('login')
     async login(@Body() dto: LoginDto) {
         try {
-            return this.authService.login(dto);
+            return await this.authService.login(dto);
         } catch(err) {
-            return {
-                status: HttpStatus.UNAUTHORIZED,
-                message: err.message
-            }
+            throw new UnauthorizedException(err.message);
         }
     }
 
     @Get('profile')
-    getProfile(@Request() req: AuthenticatedRequest) {
+    async getProfile(@Request() req: AuthenticatedRequest) {
         try {
-            return this.authService.getProfile(req.user.sub);
+            return await this.authService.getProfile(req.user.sub);
         } catch(err) {
-            return {
-                status: HttpStatus.NOT_FOUND,
-                message: err.message
-            }
+            throw new NotFoundException(err.message);
         }
     }
 
     @Post('logout')
     async logout() {
         try {
-            return this.authService.logout();
+            return await this.authService.logout();
         } catch(err) {
-            return {
-                status: HttpStatus.BAD_REQUEST,
-                message: err.message
-            }
+            throw new BadRequestException(err.message);
         }
     } 
 }

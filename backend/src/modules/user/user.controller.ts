@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UnauthorizedException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, BadRequestException, UnauthorizedException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/decorator/isPublic';
@@ -8,9 +8,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     try {
-      const user = this.userService.findOne(+id);
+      const user = await this.userService.findOne(+id);
 
       if (!user) {
         throw new UnauthorizedException();
@@ -18,10 +18,7 @@ export class UserController {
 
       return user;
     } catch(err) {
-      return {
-        status: HttpStatus.NOT_FOUND, 
-        message: err.message
-      }
+      throw new NotFoundException(err.message);
     }
   }
 
@@ -32,23 +29,20 @@ export class UserController {
       const users = [];
 
       if (users.length == 0) {
-        throw new BadRequestException();
+        throw new BadRequestException('No users found.');
       }
 
       return [];
       // return users;
     } catch(err) {
-      return {
-        status: HttpStatus.NO_CONTENT,
-        message: err.message
-      }
+      throw new NotFoundException(err.message);
     }
   }
 
   @Patch(':id')
-  update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
+  async update(@Param('id') id: number, @Body() updateUserDto: UpdateUserDto) {
     try {
-      const updatedUser = this.userService.update(+id, updateUserDto); 
+      const updatedUser = await this.userService.update(+id, updateUserDto); 
     
       if (!updatedUser) {
         throw new BadRequestException();
@@ -56,10 +50,7 @@ export class UserController {
 
       return updatedUser;
     } catch(err) {
-      return {
-        status: HttpStatus.BAD_REQUEST,
-        message: err.message
-      }
+      throw new BadRequestException(err.message);
     }
   }
 }
