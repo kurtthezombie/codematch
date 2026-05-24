@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { BadRequestException, Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { SkillService } from './skill.service';
 import { Public } from 'src/decorator/isPublic';
 
@@ -22,11 +22,7 @@ export class SkillController {
                 skills: allSkills,
             };
         } catch (err) {
-            return {
-                code: 500,
-                message: err.message,
-                skills: [],
-            }
+            throw new BadRequestException(err.message);
         }
     }
 
@@ -35,21 +31,17 @@ export class SkillController {
         try {
             const userSkills = await this.skillService.getUserSkills(userId);
         
-            if (!userSkills || userSkills.length == 0) {
+            if (!userSkills) {
                 throw new Error('Error fetching user\'s skills');
             }
 
             return {
-                status: 200,
+                code: 200,
                 message: 'Successfully fetched user\'s skills',
                 userSkills: userSkills,
             }
         } catch(err) {
-            return {
-                status: 500,
-                message: err.message,
-                userSkills: null,
-            }
+            throw new NotFoundException(err.message);
         }
     }
 }

@@ -7,19 +7,19 @@ export class BaseService {
         return this.prisma.user;
     }
 
-    get skills() {
+    get skill() {
         return this.prisma.skill;
     }
 
-    get userSkills() {
+    get userSkill() {
         return this.prisma.userSkill;
     }
 
-    get interests() {
+    get interest() {
         return this.prisma.interest;
     }
 
-    get userInterests() {
+    get userInterest() {
         return this.prisma.userInterest;
     }
 }

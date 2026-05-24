@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/common/base.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class InterestService extends BaseService {
@@ -9,7 +10,7 @@ export class InterestService extends BaseService {
     }
 
     async getAllInterests() {
-        const interests = await this.interests.findMany();
+        const interests = await this.interest.findMany();
 
         if (Object.keys(interests).length === 0) {
             return [];
@@ -20,11 +21,20 @@ export class InterestService extends BaseService {
     }
 
     async getUserInterests(userId: number) {
-        const userInterests = await this.userInterests.findMany({
-            where: { userId: userId }
+        const userFound = await this.user.findFirst({
+            where: { id: userId, isActive: true },
+            select: { id: true },
         });
 
-        const interests = await this.interests.findMany({
+        if (!userFound) {
+            throw new NotFoundException('User with that ID does not exist.');
+        }
+
+        const userInterests = await this.userInterest.findMany({
+            where: { userId: userFound.id }
+        });
+
+        const interests = await this.interest.findMany({
             where: {
                 id: {
                     in: userInterests.map(u => u.interestId), 

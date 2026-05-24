@@ -1,11 +1,13 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import bycrypt from "bcrypt";
 import { faker } from '@faker-js/faker'
+import { skills } from "src/constants/skills";
+import { interests } from "src/constants/interests";
 
 const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 const availabilityStatuses = ["Student", "Enthusiast", "Professional"];
-const skillNames = ["JavaScript", "TypeScript", "Node.js", "React", "PostgreSQL"];
-const interestNames = ["Web Apps", "Open Source", "SaaS", "Developer Tools"];
+const skillNames = skills.slice(0, 5);
+const interestNames = interests.slice(0, 5);
 
 export const UserSeeder = async (prisma: PrismaClient) => {
   const hashedPassword = await bycrypt.hash("Password2026!", 10);

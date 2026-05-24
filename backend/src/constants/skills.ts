@@ -67,6 +67,7 @@ export const skills = [
     'Zig',
     'Lua',
     'NodeJS',
+    'NestJS',
     'Git',
     'Wordpress',
     'ThreeJS',

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseService } from 'src/common/base.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -9,7 +9,7 @@ export class SkillService extends BaseService {
     }    
 
     async getAllSkills() {
-        const skills = await this.skills.findMany();
+        const skills = await this.skill.findMany();
 
         if (Object.keys(skills).length === 0) {
             return [];
@@ -20,11 +20,21 @@ export class SkillService extends BaseService {
     }
 
     async getUserSkills(userId: number) {
-        const userSkills = await this.userSkills.findMany({
-            where: { userId: userId }
+        // check if userId has existing user
+        const userFound = await this.user.findFirst({
+            where: { id: userId, isActive: true },
+            select: { id: true },
         });
 
-        const skills = await this.skills.findMany({
+        if (!userFound) {
+            throw new NotFoundException('User with that ID does not exist.');
+        }
+        
+        const userSkills = await this.userSkill.findMany({
+            where: { userId: userFound.id }
+        });
+
+        const skills = await this.skill.findMany({
             where: {
                 id: {
                     in: userSkills.map(s => s.skillId), 

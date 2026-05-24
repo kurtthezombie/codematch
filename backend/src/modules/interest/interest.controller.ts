@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { BadRequestException, Controller, Get, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { InterestService } from './interest.service';
 import { Public } from 'src/decorator/isPublic';
 
@@ -22,11 +22,7 @@ export class InterestController {
                 interests: allInterests,
             };
         } catch (err) {
-            return {
-                code: 500,
-                message: err.message,
-                interests: [],
-            }
+            throw new BadRequestException(err.message);
         }
     }
 
@@ -35,21 +31,17 @@ export class InterestController {
         try {
             const userInterests = await this.interestService.getUserInterests(userId);
         
-            if (!userInterests || userInterests.length == 0) {
+            if (!userInterests) {
                 throw new Error('Error fetching user\'s interests');
             }
 
             return {
-                status: 200,
+                code: 200,
                 message: 'Successfully fetched user\'s interests',
                 userInterests: userInterests,
             }
         } catch(err) {
-            return {
-                status: 500,
-                message: err.message,
-                userInterests: [],
-            }
+            throw new NotFoundException(err.message);
         }
     }
 }
