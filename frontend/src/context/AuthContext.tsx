@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useEffect,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useEffect, useContext, useMemo, useState, type ReactNode } from 'react';
 
 import { AUTH_UNAUTHORIZED_EVENT, api } from '@/utils/api';
 import type { AuthUser } from '@/types/auth';
@@ -76,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
   }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     function handleUnauthorized() {
       setToken(null);
       setUser(null);
@@ -87,16 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         window.location.replace('/login');
       }
     }
-      window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
 
-      return () => {
-        window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
-      };
+    return () => {
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, handleUnauthorized);
+    };
   }, []);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
 
 export function useAuth() {
   const context = useContext(AuthContext);
