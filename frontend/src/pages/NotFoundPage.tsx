@@ -5,8 +5,12 @@ import { SiteHeader } from '@/components/molecules/SiteHeader';
 import { useAuth } from '@/context/AuthContext';
 
 export default function NotFoundPage() {
-  const { isAuthenticated } = useAuth();
-  const destination = isAuthenticated ? '/dashboard' : '/';
+  const { isAuthenticated, user } = useAuth();
+  const destination = isAuthenticated
+    ? user?.role === 'admin'
+      ? '/admin/dashboard'
+      : '/dashboard'
+    : '/';
 
   return (
     <main className="min-h-screen bg-background text-foreground">
