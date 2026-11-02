@@ -3,6 +3,8 @@ import bycrypt from "bcrypt";
 import { faker } from '@faker-js/faker'
 import { skills } from "src/constants/skills";
 import { interests } from "src/constants/interests";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 const availabilityStatuses = ["Student", "Enthusiast", "Professional"];
@@ -10,24 +12,39 @@ const skillNames = skills.slice(0, 5);
 const interestNames = interests.slice(0, 5);
 
 export const UserSeeder = async (prisma: PrismaClient) => {
-  const hashedPassword = await bycrypt.hash("Password2026!", 10);
+  const configService = new ConfigService();
+  const seederUserPassword = configService.get<string>('SEEDER_USER_PASSWORD', 'EasyPassword123!');
 
+  const hashedPassword = await bycrypt.hash(seederUserPassword, 10);
+
+  // admin seeder
+  await CreateAdminSeeder(prisma, hashedPassword);
+
+  // seed 10 users
   for (let x = 0; x < 10; x++) {
     const email = `user${x + 1}@example.com`;
-    const userSkills = [skillNames[x % skillNames.length], skillNames[(x + 1) % skillNames.length]];
-    const userInterests = [interestNames[x % interestNames.length], interestNames[(x + 1) % interestNames.length]];
+    const userSkills = [
+      skillNames[x % skillNames.length],
+      skillNames[(x + 1) % skillNames.length],
+    ];
+    const userInterests = [
+      interestNames[x % interestNames.length],
+      interestNames[(x + 1) % interestNames.length],
+    ];
 
     const user: Prisma.UserCreateInput = {
       username: `user${x + 1}`,
       email,
       passwordHash: hashedPassword,
+      role: 'user',
       profile: {
         create: {
           fullName: faker.person.fullName(),
           bio: `Seed profile for user ${x + 1}`,
           location: `Location ${x + 1}`,
           experienceLevel: experienceLevels[x % experienceLevels.length],
-          availabilityStatus: availabilityStatuses[x % availabilityStatuses.length],
+          availabilityStatus:
+            availabilityStatuses[x % availabilityStatuses.length],
           avatarUrl: `https://example.com/avatar-${x + 1}.png`,
         },
       },
@@ -59,4 +76,32 @@ export const UserSeeder = async (prisma: PrismaClient) => {
       create: user,
     });
   }
+};
+
+const CreateAdminSeeder = async (
+  prisma: PrismaClient,
+  hashedPassword: string,
+) => {
+  // insert 1 admin as of now
+  const admin: Prisma.UserCreateInput = {
+    username: 'admin',
+    email: 'admin@example.com',
+    passwordHash: hashedPassword,
+    role: 'admin',
+    profile: {
+      create: {
+        bio: 'Admin profile',
+        location: 'Admin location',
+        experienceLevel: 'Expert',
+        availabilityStatus: 'Professional',
+        avatarUrl: 'https://example.com/admin-avatar.png',
+      },
+    },
+  };
+
+  await prisma.user.upsert({
+    where: { email: admin.email },
+    update: {},
+    create: admin,
+  });
 };

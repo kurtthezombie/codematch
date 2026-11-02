@@ -9,6 +9,14 @@ export class UserService extends BaseService {
     super(prisma);
   }
 
+  async findAllAdmins() {
+    const admins = await this.user.findMany({
+      where: { role: 'admin' },
+    });
+
+    return admins;
+  }
+
   async findOne(id: number) {
     const user = await this.user.findUnique({
       where: { id },
@@ -43,7 +51,9 @@ export class UserService extends BaseService {
         experienceLevel: profile?.experienceLevel,
         coderStatus: profile?.availabilityStatus,
         skills: skills.map((userSkill) => userSkill.skill.name),
-        projectInterests: interests.map((userInterest) => userInterest.interest.name),
+        projectInterests: interests.map(
+          (userInterest) => userInterest.interest.name,
+        ),
       },
     };
   }
@@ -121,7 +131,13 @@ export class UserService extends BaseService {
         },
       });
 
-      const { passwordHash, profile, skills: userSkills, interests, ...data } = updatedUser;
+      const {
+        passwordHash,
+        profile,
+        skills: userSkills,
+        interests,
+        ...data
+      } = updatedUser;
 
       return {
         message: 'User updated successfully',
@@ -133,7 +149,9 @@ export class UserService extends BaseService {
           experienceLevel: profile?.experienceLevel,
           coderStatus: profile?.availabilityStatus,
           skills: userSkills.map((userSkill) => userSkill.skill.name),
-          projectInterests: interests.map((userInterest) => userInterest.interest.name),
+          projectInterests: interests.map(
+            (userInterest) => userInterest.interest.name,
+          ),
         },
       };
     } catch (error) {

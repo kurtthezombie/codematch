@@ -11,11 +11,9 @@ import { FormField } from '@/components/molecules/FormField';
 
 export function LoginForm() {
   const [searchParams] = useSearchParams();
-  const [showAccountCreated, setShowAccountCreated] = useState(
-    searchParams.get('created') === '1'
-  );
+  const [showAccountCreated, setShowAccountCreated] = useState(searchParams.get('created') === '1');
   const navigate = useNavigate();
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -28,7 +26,7 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const identifier = String(formData.get('identifier'));
     const password = String(formData.get('password'));
-    
+
     try {
       const response = await api.post<LoginResponse>('/auth/login', {
         identifier,
@@ -36,7 +34,8 @@ export function LoginForm() {
       });
 
       login(response.access_token, response.user);
-      navigate('/dashboard');
+      const { role } = response.user;
+      navigate(role === 'admin' ? '/admin/dashboard' : '/dashboard');
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Could not log in.');
     } finally {
@@ -52,9 +51,7 @@ export function LoginForm() {
   return (
     <section className="w-full max-w-md">
       <div className="mb-8">
-        <p className="text-sm font-medium text-muted-foreground">
-          Welcome back
-        </p>
+        <p className="text-sm font-medium text-muted-foreground">Welcome back</p>
         <h1 className="mt-3 text-3xl font-semibold tracking-normal text-foreground">
           Log in to CodeMatch
         </h1>
@@ -64,9 +61,7 @@ export function LoginForm() {
         <div className="mb-6 flex items-start justify-between gap-4 rounded-md border border-emerald-300 bg-emerald-50 px-4 py-4 text-emerald-900 shadow-sm">
           <div>
             <p className="text-sm font-semibold">Account created successfully</p>
-            <p className="mt-1 text-sm text-emerald-800">
-              Log in to continue.
-            </p>
+            <p className="mt-1 text-sm text-emerald-800">Log in to continue.</p>
           </div>
           <button
             type="button"
@@ -99,12 +94,12 @@ export function LoginForm() {
           placeholder="Enter your password"
           required
         />
-  
+
         {error && (
           <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
           </p>
-        )}  
+        )}
         <div className="flex justify-end">
           <a
             href="/forgot-password"
@@ -113,7 +108,6 @@ export function LoginForm() {
             Forgot password?
           </a>
         </div>
-        
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isSubmitting ? 'Logging in...' : 'Log in'}
@@ -121,9 +115,7 @@ export function LoginForm() {
       </form>
 
       <div className="mt-6 border-t border-border pt-6">
-        <p className="mb-3 text-sm text-muted-foreground">
-          New to CodeMatch?
-        </p>
+        <p className="mb-3 text-sm text-muted-foreground">New to CodeMatch?</p>
         <Button href="/signup" variant="secondary" className="w-full gap-2">
           Create an account
           <ArrowRight className="size-4" aria-hidden="true" />

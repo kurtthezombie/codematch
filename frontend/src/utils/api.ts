@@ -20,10 +20,7 @@ export class ApiError extends Error {
   }
 }
 
-async function request<TResponse>(
-  path: string,
-  options: RequestInit = {}
-): Promise<TResponse> {
+async function request<TResponse>(path: string, options: RequestInit = {}): Promise<TResponse> {
   const token = localStorage.getItem('access_token');
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -63,12 +60,7 @@ async function parseResponse(response: Response) {
 }
 
 function getErrorMessage(data: unknown) {
-  if (
-    data &&
-    typeof data === 'object' &&
-    'message' in data &&
-    typeof data.message === 'string'
-  ) {
+  if (data && typeof data === 'object' && 'message' in data && typeof data.message === 'string') {
     return data.message;
   }
 
@@ -83,11 +75,7 @@ export const api = {
     });
   },
 
-  post<TResponse>(
-    path: string,
-    data?: RequestData,
-    options?: RequestOptions
-  ) {
+  post<TResponse>(path: string, data?: RequestData, options?: RequestOptions) {
     return request<TResponse>(path, {
       method: 'POST',
       body: data ? JSON.stringify(data) : undefined,
@@ -103,11 +91,7 @@ export const api = {
     });
   },
 
-  patch<TResponse>(
-    path: string,
-    data?: RequestData,
-    options?: RequestOptions
-  ) {
+  patch<TResponse>(path: string, data?: RequestData, options?: RequestOptions) {
     return request<TResponse>(path, {
       method: 'PATCH',
       body: data ? JSON.stringify(data) : undefined,
