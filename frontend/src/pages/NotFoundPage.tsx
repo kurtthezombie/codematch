@@ -3,11 +3,13 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/atoms/Button';
 import { SiteHeader } from '@/components/molecules/SiteHeader';
 import { useAuth } from '@/context/AuthContext';
+import { useSelectedRole } from '@/hooks/useSelectedRole';
 
 export default function NotFoundPage() {
   const { isAuthenticated, user } = useAuth();
+  const selectedRole = useSelectedRole();
   const destination = isAuthenticated
-    ? user?.role === 'admin'
+    ? user?.role === selectedRole
       ? '/admin/dashboard'
       : '/dashboard'
     : '/';

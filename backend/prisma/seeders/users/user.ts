@@ -3,6 +3,8 @@ import bycrypt from "bcrypt";
 import { faker } from '@faker-js/faker'
 import { skills } from "src/constants/skills";
 import { interests } from "src/constants/interests";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 const experienceLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 const availabilityStatuses = ["Student", "Enthusiast", "Professional"];
@@ -10,7 +12,10 @@ const skillNames = skills.slice(0, 5);
 const interestNames = interests.slice(0, 5);
 
 export const UserSeeder = async (prisma: PrismaClient) => {
-  const hashedPassword = await bycrypt.hash('Password2026!', 10);
+  const configService = new ConfigService();
+  const seederUserPassword = configService.get<string>('SEEDER_USER_PASSWORD', 'EasyPassword123!');
+
+  const hashedPassword = await bycrypt.hash(seederUserPassword, 10);
 
   // admin seeder
   await CreateAdminSeeder(prisma, hashedPassword);
